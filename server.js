@@ -7,12 +7,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. Database Connection
+// Database Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected!"))
   .catch(err => console.error("❌ Connection Error:", err));
 
-// 2. Product Schema (Database ka structure)
+// Product Schema
 const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model("Product", productSchema);
 
-// 3. GET Route (Products dikhane ke liye)
+// GET Route (Products dekhne ke liye)
 app.get("/products", async (req, res) => {
     try {
         const products = await Product.find();
@@ -30,10 +30,10 @@ app.get("/products", async (req, res) => {
     }
 });
 
-// 4. POST Route (Naya product add karne ke liye)
+// POST Route (Admin se product add karne ke liye)
 app.post("/products", async (req, res) => {
-    const newProduct = new Product(req.body);
     try {
+        const newProduct = new Product(req.body);
         await newProduct.save();
         res.status(201).json(newProduct);
     } catch (err) {
@@ -44,4 +44,4 @@ app.post("/products", async (req, res) => {
 app.get("/", (req, res) => res.send("Oasis Server Active! 🔥"));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Port: ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
