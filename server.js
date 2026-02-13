@@ -12,36 +12,20 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected!"))
   .catch(err => console.error("❌ Connection Error:", err));
 
-// Product Schema
-const productSchema = new mongoose.Schema({
-    name: String,
-    price: Number,
-    image: String
-});
-const Product = mongoose.model("Product", productSchema);
+// Structure
+const Product = mongoose.model("Product", new mongoose.Schema({
+    name: String, price: Number, image: String
+}));
 
-// GET Route (Products dekhne ke liye)
+// Routes
 app.get("/products", async (req, res) => {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+    try { res.json(await Product.find()); } catch (e) { res.status(500).send(e.message); }
 });
 
-// POST Route (Admin se product add karne ke liye)
 app.post("/products", async (req, res) => {
-    try {
-        const newProduct = new Product(req.body);
-        await newProduct.save();
-        res.status(201).json(newProduct);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
+    try { res.status(201).json(await new Product(req.body).save()); } catch (e) { res.status(400).send(e.message); }
 });
 
-app.get("/", (req, res) => res.send("Oasis Server Active! 🔥"));
+app.get("/", (req, res) => res.send("Oasis Server is Running! 🔥"));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+app.listen(process.env.PORT || 5000);
